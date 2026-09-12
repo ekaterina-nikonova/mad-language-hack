@@ -41,15 +41,6 @@ class ArtifactRenderer extends StatelessWidget {
               if (artifact.agentMessage != null && artifact.agentMessage!.isNotEmpty) ...[
                 AgentMessageBubble(message: artifact.agentMessage!),
               ],
-              // 1. Feedback Card (if turn returned feedback)
-              if (hasFeedback) ...[
-                FeedbackCard(
-                  feedback: artifact.feedback!,
-                  onContinue: onContinueFromFeedback,
-                ),
-                const SizedBox(height: AppTheme.spacingMD),
-              ],
-
               // 2. Content Blocks
               ...artifact.content.map((contentBlock) {
                 return WidgetRegistry.buildContent(
@@ -68,13 +59,24 @@ class ArtifactRenderer extends StatelessWidget {
                   );
                 }),
                 const SizedBox(height: AppTheme.spacingLG),
+              ],
 
-                // 4. Submit Button
+              // 4. Feedback Card (moved to bottom)
+              if (hasFeedback) ...[
+                FeedbackCard(
+                  feedback: artifact.feedback!,
+                  onContinue: onContinueFromFeedback,
+                ),
+                const SizedBox(height: AppTheme.spacingMD),
+              ],
+
+              // 5. Submit Button (only show if no feedback)
+              if (!hasFeedback && artifact.inputs.isNotEmpty) ...[
                 SizedBox(
                   width: double.infinity,
                   height: 52,
                   child: ElevatedButton(
-                    onPressed: isSubmitting ? null : onSubmit,
+                    onPressed: (isSubmitting || !responseCollector.isComplete) ? null : onSubmit,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.accent,
                       foregroundColor: AppTheme.background,

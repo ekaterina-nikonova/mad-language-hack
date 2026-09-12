@@ -89,6 +89,16 @@ class _FillBlanksWidgetState extends State<FillBlanksWidget> {
               ),
             ],
           ),
+          if (widget.block.question != null && widget.block.question!.isNotEmpty) ...[
+            const SizedBox(height: AppTheme.spacingMD),
+            Text(
+              widget.block.question!,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.primary,
+                  ),
+            ),
+          ],
           const SizedBox(height: AppTheme.spacingMD),
           ...widget.block.blanks.asMap().entries.map((entry) {
             final index = entry.key;

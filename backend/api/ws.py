@@ -24,7 +24,7 @@ async def websocket_session(websocket: WebSocket):
     logger.info("WebSocket connection established on /ws/session")
     
     # Start a new session (defaults to "no" / Norwegian and "General" topic)
-    session = session_manager.start_session(target_language="no", topic="Daily Life")
+    session = session_manager.start_session(target_language="no", topic="IT sector for developers")
     
     try:
         async def send_event(msg_type: str, data):
@@ -53,7 +53,7 @@ async def websocket_session(websocket: WebSocket):
                 else:
                     await send_event("agent_thought", f"Plan {action}d. Re-evaluating...")
                     await asyncio.sleep(1)
-                    await loop_engine.propose_plan(session, send_event)
+                    await loop_engine.propose_plan(session, send_event, retry=True)
             
             elif msg_type == "response":
                 logger.info("Received user response")

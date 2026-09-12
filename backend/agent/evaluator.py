@@ -39,7 +39,7 @@ class Evaluator:
                         user_answer_text = opt.get("text", user_answer_text)
                         break
 
-            if correct_answer_text is not None:
+            if correct_answer_text is not None and input_block.get("type") not in ["audio_recorder", "free_text"]:
                 # Objective comparison
                 if str(user_answer_text).strip().lower() == str(correct_answer_text).strip().lower():
                     explanations.append(f"Correct for {input_id}.")
@@ -47,6 +47,18 @@ class Evaluator:
                     all_correct = False
                     explanations.append(f"Incorrect for {input_id}. User selected '{user_answer_text}', expected '{correct_answer_text}'.")
             else:
+                # Pre-process audio responses
+                if input_block.get("type") == "audio_recorder" and user_answer_text.startswith("data:audio/"):
+                    import base64
+                    try:
+                        # Format is typically "data:audio/webm;base64,....."
+                        header, base64_data = user_answer_text.split(",", 1)
+                        audio_bytes = base64.b64decode(base64_data)
+                        user_answer_text = await llm_service.speech_to_text(audio_bytes, learner.target_language)
+                    except Exception as e:
+                        print(f"Error transcribing audio: {e}")
+                        user_answer_text = "(Audio transcription failed)"
+                        
                 # Subjective (use Gemini)
                 prompt = (
                     f"Evaluate this response in {learner.target_language}.\n"

@@ -147,40 +147,6 @@ class _SessionScreenState extends State<SessionScreen> {
           ],
         ),
         actions: [
-          // Scenario selector for browser evaluation
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-              color: AppTheme.surfaceElevated,
-              borderRadius: BorderRadius.circular(AppTheme.radiusSM),
-              border: Border.all(color: AppTheme.border),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<int>(
-                value: widget.sessionService.currentMockIndex,
-                dropdownColor: AppTheme.surfaceElevated,
-                icon: const Icon(Icons.tune_rounded, color: AppTheme.accent, size: 18),
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppTheme.primary,
-                  fontWeight: FontWeight.w500,
-                ),
-                items: List.generate(
-                  widget.sessionService.totalMockCount,
-                  (index) => DropdownMenuItem(
-                    value: index,
-                    child: Text(_getTurnTitle(index)),
-                  ),
-                ),
-                onChanged: (index) {
-                  if (index != null) {
-                    widget.sessionService.selectMockTurn(index);
-                  }
-                },
-              ),
-            ),
-          ),
           // Connection status badge
           Padding(
             padding: const EdgeInsets.only(right: AppTheme.spacingMD),

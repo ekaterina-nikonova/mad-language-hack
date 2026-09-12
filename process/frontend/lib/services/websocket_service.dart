@@ -31,7 +31,7 @@ class SessionService extends ChangeNotifier {
   List<String> get agentThoughts => _agentThoughts;
   Map<String, dynamic>? get currentPlan => _currentPlan;
 
-  Future<void> connect({String url = 'ws://localhost:8001/ws/session'}) async {
+  Future<void> connect({String url = 'wss://mwjq8r10-8001.euw.devtunnels.ms/ws/session'}) async {
     _status = ConnectionStatus.connecting;
     notifyListeners();
 

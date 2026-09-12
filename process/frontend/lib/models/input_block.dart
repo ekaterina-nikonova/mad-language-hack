@@ -100,6 +100,7 @@ class MultipleChoiceInputBlock extends InputBlock {
 }
 
 class FreeTextInputBlock extends InputBlock {
+  final String? question;
   final String? placeholder;
   final int maxLength;
   final int minLength;
@@ -108,6 +109,7 @@ class FreeTextInputBlock extends InputBlock {
 
   const FreeTextInputBlock({
     required super.id,
+    this.question,
     this.placeholder,
     this.maxLength = 500,
     this.minLength = 0,
@@ -118,6 +120,7 @@ class FreeTextInputBlock extends InputBlock {
   factory FreeTextInputBlock.fromJson(Map<String, dynamic> json) {
     return FreeTextInputBlock(
       id: json['id'] as String? ?? '',
+      question: json['question'] as String?,
       placeholder: json['placeholder'] as String?,
       maxLength: json['max_length'] as int? ?? 500,
       minLength: json['min_length'] as int? ?? 0,
@@ -130,6 +133,7 @@ class FreeTextInputBlock extends InputBlock {
   Map<String, dynamic> toJson() => {
     'type': type,
     'id': id,
+    if (question != null) 'question': question,
     if (placeholder != null) 'placeholder': placeholder,
     'max_length': maxLength,
     'min_length': minLength,
@@ -165,20 +169,29 @@ class BlankItem {
 }
 
 class FillBlanksInputBlock extends InputBlock {
+  final String? question;
   final List<BlankItem> blanks;
 
   const FillBlanksInputBlock({
     required super.id,
+    this.question,
     required this.blanks,
   }) : super(type: 'fill_blanks');
 
   factory FillBlanksInputBlock.fromJson(Map<String, dynamic> json) {
     final rawBlanks = json['blanks'] as List<dynamic>? ?? [];
+    var parsedBlanks = rawBlanks
+        .map((b) => BlankItem.fromJson(b as Map<String, dynamic>))
+        .toList();
+        
+    if (parsedBlanks.isEmpty) {
+      parsedBlanks.add(const BlankItem(blankId: 'blank_0'));
+    }
+
     return FillBlanksInputBlock(
       id: json['id'] as String? ?? '',
-      blanks: rawBlanks
-          .map((b) => BlankItem.fromJson(b as Map<String, dynamic>))
-          .toList(),
+      question: json['question'] as String?,
+      blanks: parsedBlanks,
     );
   }
 
@@ -186,6 +199,7 @@ class FillBlanksInputBlock extends InputBlock {
   Map<String, dynamic> toJson() => {
     'type': type,
     'id': id,
+    if (question != null) 'question': question,
     'blanks': blanks.map((b) => b.toJson()).toList(),
   };
 }
@@ -207,7 +221,7 @@ class AudioRecorderInputBlock extends InputBlock {
   factory AudioRecorderInputBlock.fromJson(Map<String, dynamic> json) {
     return AudioRecorderInputBlock(
       id: json['id'] as String? ?? '',
-      prompt: json['prompt'] as String? ?? 'Record your voice:',
+      prompt: json['prompt'] as String? ?? json['question'] as String? ?? 'Record your voice:',
       referenceText: json['reference_text'] as String?,
       maxDurationSeconds: json['max_duration_seconds'] as int? ?? 30,
       allowReplay: json['allow_replay'] as bool? ?? true,
@@ -434,7 +448,7 @@ class BooleanInputBlock extends InputBlock {
         ['True', 'False'];
     return BooleanInputBlock(
       id: json['id'] as String? ?? '',
-      statement: json['statement'] as String? ?? '',
+      statement: json['statement'] as String? ?? json['question'] as String? ?? '',
       labels: rawLabels,
     );
   }

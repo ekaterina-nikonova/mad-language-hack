@@ -21,7 +21,7 @@ class MADLanguageApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'MAD Language — Generative UI',
+      title: 'FluencyOS',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       home: SessionScreen(sessionService: sessionService),

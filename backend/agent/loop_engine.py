@@ -14,9 +14,16 @@ class LoopEngine:
         self.evaluator = evaluator
         self.root_cause_analyzer = root_cause_analyzer
 
-    async def propose_plan(self, session: Session, send_event=None):
+    async def propose_plan(self, session: Session, send_event=None, retry=False):
         skills = ["reading", "writing", "listening", "speaking"]
-        next_skill = skills[session.current_turn % len(skills)]
+        current_skill = skills[session.current_turn % len(skills)]
+        
+        if retry:
+            import random
+            available_skills = [s for s in skills if s != current_skill]
+            next_skill = random.choice(available_skills)
+        else:
+            next_skill = current_skill
         
         if send_event:
             import asyncio
@@ -52,11 +59,36 @@ class LoopEngine:
         is_correct = eval_result.is_correct
         
         if not is_correct:
+            session.learner.consecutive_incorrect += 1
+            session.learner.consecutive_correct = 0
+            if session.learner.consecutive_incorrect >= 2:
+                levels = ["A1", "A2", "B1", "B2", "C1", "C2"]
+                try:
+                    idx = levels.index(session.learner.overall_level)
+                    if idx > 0:
+                        session.learner.overall_level = levels[idx - 1]
+                        session.learner.consecutive_incorrect = 0
+                except ValueError:
+                    pass
+
             rca_result = await self.root_cause_analyzer.analyze(
                 session.current_artifact, response, session.learner, eval_result.explanation
             )
             feedback_explanation = rca_result.explanation
             # Could update learner profile with root cause info here
+        else:
+            session.learner.consecutive_correct += 1
+            session.learner.consecutive_incorrect = 0
+            if session.learner.consecutive_correct >= 2:
+                levels = ["A1", "A2", "B1", "B2", "C1", "C2"]
+                try:
+                    idx = levels.index(session.learner.overall_level)
+                    if idx < len(levels) - 1:
+                        session.learner.overall_level = levels[idx + 1]
+                        session.learner.consecutive_correct = 0
+                except ValueError:
+                    pass
+            rca_result = None
             
         mock_feedback = dict(session.current_artifact)
         mock_feedback["mode"] = "feedback"

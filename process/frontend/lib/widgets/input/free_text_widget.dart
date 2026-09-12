@@ -66,6 +66,16 @@ class _FreeTextWidgetState extends State<FreeTextWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (widget.block.question != null && widget.block.question!.isNotEmpty) ...[
+            Text(
+              widget.block.question!,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: AppTheme.primary,
+                  ),
+            ),
+            const SizedBox(height: AppTheme.spacingMD),
+          ],
           Container(
             padding: const EdgeInsets.all(AppTheme.spacingMD),
             decoration: BoxDecoration(

@@ -27,52 +27,62 @@ import '../widgets/input/boolean_widget.dart';
 /// to concrete Flutter components.
 class WidgetRegistry {
   static final Map<String, Widget Function(ContentBlock, ResponseCollector?)> _contentBuilders = {
-    'text': (block, _) => TextBlockWidget(block: block as TextContentBlock),
-    'rich_text': (block, _) => RichTextBlockWidget(block: block as RichTextContentBlock),
+    'text': (block, _) => TextBlockWidget(key: ValueKey(block.id), block: block as TextContentBlock),
+    'rich_text': (block, _) => RichTextBlockWidget(key: ValueKey(block.id), block: block as RichTextContentBlock),
     'audio': (block, collector) => AudioBlockWidget(
+          key: ValueKey(block.id),
           block: block as AudioContentBlock,
           collector: collector,
         ),
-    'image': (block, _) => ImageBlockWidget(block: block as ImageContentBlock),
-    'vocabulary_grid': (block, _) => VocabularyGridWidget(block: block as VocabularyGridContentBlock),
-    'dialogue': (block, _) => DialogueBlockWidget(block: block as DialogueContentBlock),
-    'conjugation_table': (block, _) => ConjugationTableWidget(block: block as ConjugationTableContentBlock),
+    'image': (block, _) => ImageBlockWidget(key: ValueKey(block.id), block: block as ImageContentBlock),
+    'vocabulary_grid': (block, _) => VocabularyGridWidget(key: ValueKey(block.id), block: block as VocabularyGridContentBlock),
+    'dialogue': (block, _) => DialogueBlockWidget(key: ValueKey(block.id), block: block as DialogueContentBlock),
+    'conjugation_table': (block, _) => ConjugationTableWidget(key: ValueKey(block.id), block: block as ConjugationTableContentBlock),
   };
 
   static final Map<String, Widget Function(InputBlock, ResponseCollector)> _inputBuilders = {
     'multiple_choice': (block, collector) => MultipleChoiceWidget(
+          key: ValueKey(block.id),
           block: block as MultipleChoiceInputBlock,
           collector: collector,
         ),
     'free_text': (block, collector) => FreeTextWidget(
+          key: ValueKey(block.id),
           block: block as FreeTextInputBlock,
           collector: collector,
         ),
     'fill_blanks': (block, collector) => FillBlanksWidget(
+          key: ValueKey(block.id),
           block: block as FillBlanksInputBlock,
           collector: collector,
         ),
     'audio_recorder': (block, collector) => AudioRecorderWidget(
+          key: ValueKey(block.id),
           block: block as AudioRecorderInputBlock,
           collector: collector,
         ),
     'dropdown': (block, collector) => DropdownWidget(
+          key: ValueKey(block.id),
           block: block as DropdownInputBlock,
           collector: collector,
         ),
     'slider': (block, collector) => SliderWidget(
+          key: ValueKey(block.id),
           block: block as SliderInputBlock,
           collector: collector,
         ),
     'reorder': (block, collector) => ReorderWidget(
+          key: ValueKey(block.id),
           block: block as ReorderInputBlock,
           collector: collector,
         ),
     'matching': (block, collector) => MatchingWidget(
+          key: ValueKey(block.id),
           block: block as MatchingInputBlock,
           collector: collector,
         ),
     'boolean': (block, collector) => BooleanWidget(
+          key: ValueKey(block.id),
           block: block as BooleanInputBlock,
           collector: collector,
         ),

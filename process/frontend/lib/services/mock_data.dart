@@ -13,7 +13,7 @@ class MockDataService {
       "level": "B1",
       "target_language": "no",
       "base_language": "en",
-      "topic": "Min Daglige Rutine (Free Form)",
+      "topic": "IT sector for developers (Free Form)",
       "grammar_focus": "sentence_structure",
       "mode": "exercise",
       "agent_message":
@@ -82,7 +82,7 @@ class MockDataService {
       "level": "B1",
       "target_language": "no",
       "base_language": "en",
-      "topic": "På Flyplassen i Oslo (Listening)",
+      "topic": "IT sector for developers (Listening)",
       "grammar_focus": "listening_comprehension",
       "mode": "exercise",
       "agent_message":
@@ -149,7 +149,7 @@ class MockDataService {
       "level": "A2",
       "target_language": "no",
       "base_language": "en",
-      "topic": "Muntlig Øvelse: Bestille på Restaurant",
+      "topic": "Muntlig Øvelse: IT sector for developers",
       "grammar_focus": "pronunciation_intonation",
       "mode": "exercise",
       "agent_message":
@@ -196,7 +196,7 @@ class MockDataService {
       "level": "B1",
       "target_language": "no",
       "base_language": "en",
-      "topic": "Samtale: Innsjekking på Hotell",
+      "topic": "Samtale: IT sector for developers",
       "grammar_focus": "polite_requests",
       "mode": "exercise",
       "agent_message":
@@ -331,7 +331,7 @@ class MockDataService {
       "level": "A1",
       "target_language": "no",
       "base_language": "en",
-      "topic": "V2-regelen og Ordparing",
+      "topic": "IT sector for developers",
       "grammar_focus": "word_order",
       "mode": "exercise",
       "agent_message":

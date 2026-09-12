@@ -2,7 +2,7 @@
     "user_id": "demo_user",
     "target_language": "no",
     "base_language": "en",
-    "overall_level": "B1",
+    "overall_level": "A1",
     "skill_levels": {
         "reading": "B1",
         "writing": "B1",
@@ -13,5 +13,5 @@
     "topic_scores": {},
     "grammar_scores": {},
     "consecutive_correct": 0,
-    "consecutive_incorrect": 0
+    "consecutive_incorrect": 5
 }

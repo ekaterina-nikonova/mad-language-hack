@@ -86,8 +86,11 @@ class _MultipleChoiceWidgetState extends State<MultipleChoiceWidget> {
             ),
             const SizedBox(height: AppTheme.spacingMD),
           ],
-          ...widget.block.options.map((option) {
+          ...widget.block.options.asMap().entries.map((entry) {
+            final index = entry.key;
+            final option = entry.value;
             final isSelected = _selectedIds.contains(option.id);
+            final displayLabel = option.label ?? '${index + 1}'; // 1, 2, 3...
 
             return Padding(
               padding: const EdgeInsets.only(bottom: AppTheme.spacingSM),
@@ -122,9 +125,9 @@ class _MultipleChoiceWidgetState extends State<MultipleChoiceWidget> {
                         ),
                         child: Center(
                           child: Text(
-                            option.label ?? option.id.toUpperCase(),
+                            displayLabel,
                             style: TextStyle(
-                              fontSize: 12,
+                              fontSize: 13,
                               fontWeight: FontWeight.w700,
                               color: isSelected ? AppTheme.background : AppTheme.secondary,
                             ),

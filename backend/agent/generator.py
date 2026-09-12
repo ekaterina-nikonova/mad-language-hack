@@ -78,7 +78,9 @@ class ArtifactGenerator:
             )
         
         input_blocks = []
+        correct_answers = {}
         for i in gemini_artifact.inputs:
+            unique_id = f"{i.id}_{uuid.uuid4().hex[:6]}"
             formatted_options = None
             if i.options:
                 formatted_options = [
@@ -87,20 +89,14 @@ class ArtifactGenerator:
                 ]
             input_blocks.append(
                 InputBlock(
-                    id=i.id,
+                    id=unique_id,
                     type=i.type,
                     question=i.question,
                     options=formatted_options
                 )
             )
-        
-        # Save correct answers in metadata (so the frontend doesn't see them, 
-        # but we can use them in the Evaluator)
-        correct_answers = {
-            i.id: i.correct_answer 
-            for i in gemini_artifact.inputs 
-            if i.correct_answer is not None
-        }
+            if i.correct_answer is not None:
+                correct_answers[unique_id] = i.correct_answer
 
         # Build the final Artifact
         session.current_turn += 1

@@ -32,7 +32,7 @@ app.include_router(ws_router)
 
 @app.get("/")
 async def root():
-    return {"message": "MAD Language Hack Agent Loop API is running"}
+    return {"message": "FluencyOS Agent Loop API is running"}
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8001, reload=True)
