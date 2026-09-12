@@ -1,12 +1,13 @@
 import uvicorn
+import os
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
-import os
+
+# Load .env from the parent directory BEFORE importing app modules
+load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 from api.ws import router as ws_router
-
-load_dotenv()
 
 app = FastAPI(title="MLH Agent Loop API")
 
