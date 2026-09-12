@@ -14,12 +14,30 @@ class LoopEngine:
         self.evaluator = evaluator
         self.root_cause_analyzer = root_cause_analyzer
 
-    async def run_turn(self, session: Session):
-        """Step 1-3: Assess, Plan, Generate"""
-        # For this version, we use the existing generator to create the artifact
+    async def propose_plan(self, session: Session, send_event=None):
         skills = ["reading", "writing", "listening", "speaking"]
         next_skill = skills[session.current_turn % len(skills)]
-        artifact = await self.generator.generate(session, skill=next_skill)
+        
+        if send_event:
+            import asyncio
+            await send_event("agent_thought", "Analyzing learner profile...")
+            await asyncio.sleep(1)
+            await send_event("agent_thought", f"Current turn: {session.current_turn}, Performance is stable.")
+            await asyncio.sleep(1)
+            await send_event("agent_thought", f"Determining optimal next skill: {next_skill.capitalize()}")
+            await asyncio.sleep(1)
+            
+            plan_text = f"For the next turn, I propose we focus on **{next_skill.capitalize()}**."
+            await send_event("plan_proposal", {"plan": plan_text, "skill": next_skill})
+        return next_skill
+
+    async def run_turn(self, session: Session, skill: str = None):
+        """Step 1-3: Assess, Plan, Generate"""
+        if not skill:
+            skills = ["reading", "writing", "listening", "speaking"]
+            skill = skills[session.current_turn % len(skills)]
+            
+        artifact = await self.generator.generate(session, skill=skill)
         session.current_artifact = artifact.model_dump()
         return artifact
 

@@ -14,6 +14,10 @@ class SessionService extends ChangeNotifier {
   Artifact? _currentArtifact;
   int _currentMockIndex = 0;
   String _sessionId = 'sess-default';
+  
+  // New state for autonomous agent widget
+  List<String> _agentThoughts = [];
+  Map<String, dynamic>? _currentPlan;
 
   final StreamController<Artifact> _artifactController =
       StreamController<Artifact>.broadcast();
@@ -24,6 +28,8 @@ class SessionService extends ChangeNotifier {
   Stream<Artifact> get artifactStream => _artifactController.stream;
   int get currentMockIndex => _currentMockIndex;
   int get totalMockCount => MockDataService.mockArtifactSequence.length;
+  List<String> get agentThoughts => _agentThoughts;
+  Map<String, dynamic>? get currentPlan => _currentPlan;
 
   Future<void> connect({String url = 'ws://localhost:8001/ws/session'}) async {
     _status = ConnectionStatus.connecting;
@@ -73,17 +79,45 @@ class SessionService extends ChangeNotifier {
     try {
       final data = jsonDecode(raw.toString()) as Map<String, dynamic>;
       final msgType = data['type'] as String? ?? 'artifact';
-      final payload = data['data'] as Map<String, dynamic>? ?? data;
+      final payload = data['data'] ?? data;
 
       debugPrint('DEBUG: Parsed message type: $msgType');
       if (msgType == 'artifact' || msgType == 'feedback') {
-        _currentArtifact = Artifact.fromJson(payload);
+        _currentArtifact = Artifact.fromJson(payload as Map<String, dynamic>);
+        _currentPlan = null; // Clear plan when artifact arrives
         _artifactController.add(_currentArtifact!);
         debugPrint('DEBUG: Successfully parsed Artifact and added to stream.');
+        notifyListeners();
+      } else if (msgType == 'agent_thought') {
+        _agentThoughts.add(payload.toString());
+        // Keep only the last 50 thoughts to avoid memory issues
+        if (_agentThoughts.length > 50) {
+          _agentThoughts.removeAt(0);
+        }
+        notifyListeners();
+      } else if (msgType == 'plan_proposal') {
+        _currentPlan = payload as Map<String, dynamic>;
         notifyListeners();
       }
     } catch (e) {
       debugPrint('DEBUG ERROR parsing message: $e');
+    }
+  }
+
+  Future<void> submitPlanDecision(String action, {String? skill}) async {
+    if (_status == ConnectionStatus.connected && _channel != null) {
+      final jsonMsg = jsonEncode({
+        'type': 'plan_approval',
+        'action': action,
+        'data': {
+          if (skill != null) 'skill': skill,
+        }
+      });
+      _channel!.sink.add(jsonMsg);
+      if (action == 'approve') {
+         _currentPlan = null;
+         notifyListeners();
+      }
     }
   }
 

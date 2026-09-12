@@ -4,7 +4,7 @@ import '../models/artifact.dart';
 import '../services/websocket_service.dart';
 import '../utils/response_collector.dart';
 import '../widgets/artifact_renderer.dart';
-
+import '../widgets/agent_thought_widget.dart';
 class SessionScreen extends StatefulWidget {
   final SessionService sessionService;
 
@@ -231,44 +231,55 @@ class _SessionScreenState extends State<SessionScreen> {
           ),
         ],
       ),
-      body: artifact == null
-          ? const Center(
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: AppTheme.accent,
-              ),
-            )
-          : Column(
-              children: [
-                // Top Progress Bar
-                LinearProgressIndicator(
-                  value: artifact.totalProgress > 0
-                      ? artifact.currentProgress / artifact.totalProgress
-                      : 0.2,
-                  backgroundColor: AppTheme.surface,
-                  valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.accent),
-                  minHeight: 3,
-                ),
-
-                // Main Stage Canvas
-                Expanded(
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 720),
-                      child: ArtifactRenderer(
-                        artifact: artifact,
-                        responseCollector: _currentCollector!,
-                        isSubmitting: _isSubmitting,
-                        onSubmit: _handleSubmit,
-                        onContinueFromFeedback: () {
-                          widget.sessionService.continueToNextTurn();
-                        },
-                      ),
+      body: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Main Stage
+          Expanded(
+            child: artifact == null
+                ? const Center(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppTheme.accent,
                     ),
+                  )
+                : Column(
+                    children: [
+                      // Top Progress Bar
+                      LinearProgressIndicator(
+                        value: artifact.totalProgress > 0
+                            ? artifact.currentProgress / artifact.totalProgress
+                            : 0.2,
+                        backgroundColor: AppTheme.surface,
+                        valueColor: const AlwaysStoppedAnimation<Color>(AppTheme.accent),
+                        minHeight: 3,
+                      ),
+
+                      // Main Stage Canvas
+                      Expanded(
+                        child: Center(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 720),
+                            child: ArtifactRenderer(
+                              artifact: artifact,
+                              responseCollector: _currentCollector!,
+                              isSubmitting: _isSubmitting,
+                              onSubmit: _handleSubmit,
+                              onContinueFromFeedback: () {
+                                widget.sessionService.continueToNextTurn();
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
+          ),
+          
+          // Agent Thoughts Side Panel
+          AgentThoughtWidget(sessionService: widget.sessionService),
+        ],
+      ),
     );
   }
 }
