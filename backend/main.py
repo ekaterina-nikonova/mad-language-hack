@@ -7,9 +7,18 @@ from fastapi.middleware.cors import CORSMiddleware
 # Load .env from the parent directory BEFORE importing app modules
 load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
+from fastapi.staticfiles import StaticFiles
+
 from api.ws import router as ws_router
 
+# Ensure storage directories exist
+os.makedirs(os.path.join(os.path.dirname(__file__), "storage", "audio"), exist_ok=True)
+os.makedirs(os.path.join(os.path.dirname(__file__), "storage", "artifacts"), exist_ok=True)
+os.makedirs(os.path.join(os.path.dirname(__file__), "storage", "responses"), exist_ok=True)
+
 app = FastAPI(title="MLH Agent Loop API")
+
+app.mount("/storage", StaticFiles(directory=os.path.join(os.path.dirname(__file__), "storage")), name="storage")
 
 app.add_middleware(
     CORSMiddleware,
@@ -26,4 +35,4 @@ async def root():
     return {"message": "MAD Language Hack Agent Loop API is running"}
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8001, reload=True)

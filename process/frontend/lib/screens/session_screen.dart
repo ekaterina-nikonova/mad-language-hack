@@ -261,7 +261,7 @@ class _SessionScreenState extends State<SessionScreen> {
                         isSubmitting: _isSubmitting,
                         onSubmit: _handleSubmit,
                         onContinueFromFeedback: () {
-                          widget.sessionService.nextMockTurn();
+                          widget.sessionService.continueToNextTurn();
                         },
                       ),
                     ),

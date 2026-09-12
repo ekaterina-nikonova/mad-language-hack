@@ -34,3 +34,4 @@ process/frontend/.dart_tool/
 .vscode/
 *.swp
 Thumbs.db
+sample_code_loop_gemini.md

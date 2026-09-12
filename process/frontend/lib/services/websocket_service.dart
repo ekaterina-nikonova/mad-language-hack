@@ -25,7 +25,7 @@ class SessionService extends ChangeNotifier {
   int get currentMockIndex => _currentMockIndex;
   int get totalMockCount => MockDataService.mockArtifactSequence.length;
 
-  Future<void> connect({String url = 'ws://localhost:8000/ws/session'}) async {
+  Future<void> connect({String url = 'ws://localhost:8001/ws/session'}) async {
     _status = ConnectionStatus.connecting;
     notifyListeners();
 
@@ -39,20 +39,23 @@ class SessionService extends ChangeNotifier {
           _handleIncomingMessage(message);
         },
         onError: (error) {
-          debugPrint('WebSocket error: $error. Falling back to local generative simulation.');
-          _fallbackToSimulated();
+          debugPrint('WebSocket error: $error.');
+          _status = ConnectionStatus.disconnected;
+          notifyListeners();
         },
         onDone: () {
-          debugPrint('WebSocket closed. Falling back to local simulation.');
-          _fallbackToSimulated();
+          debugPrint('WebSocket closed.');
+          _status = ConnectionStatus.disconnected;
+          notifyListeners();
         },
       );
 
       _status = ConnectionStatus.connected;
       notifyListeners();
     } catch (e) {
-      debugPrint('Connection exception: $e. Falling back to simulation.');
-      _fallbackToSimulated();
+      debugPrint('Connection exception: $e.');
+      _status = ConnectionStatus.disconnected;
+      notifyListeners();
     }
   }
 
@@ -66,18 +69,21 @@ class SessionService extends ChangeNotifier {
   }
 
   void _handleIncomingMessage(dynamic raw) {
+    debugPrint('DEBUG: Received raw message from WebSocket: $raw');
     try {
       final data = jsonDecode(raw.toString()) as Map<String, dynamic>;
       final msgType = data['type'] as String? ?? 'artifact';
       final payload = data['data'] as Map<String, dynamic>? ?? data;
 
+      debugPrint('DEBUG: Parsed message type: $msgType');
       if (msgType == 'artifact' || msgType == 'feedback') {
         _currentArtifact = Artifact.fromJson(payload);
         _artifactController.add(_currentArtifact!);
+        debugPrint('DEBUG: Successfully parsed Artifact and added to stream.');
         notifyListeners();
       }
     } catch (e) {
-      debugPrint('Error parsing message: $e');
+      debugPrint('DEBUG ERROR parsing message: $e');
     }
   }
 
@@ -91,6 +97,17 @@ class SessionService extends ChangeNotifier {
     } else {
       // In simulated mode, advance to next step in sequence
       await Future.delayed(const Duration(milliseconds: 400));
+      nextMockTurn();
+    }
+  }
+
+  void continueToNextTurn() {
+    if (_status == ConnectionStatus.connected && _channel != null) {
+      final jsonMsg = jsonEncode({
+        'type': 'continue',
+      });
+      _channel!.sink.add(jsonMsg);
+    } else {
       nextMockTurn();
     }
   }

@@ -11,11 +11,20 @@ class InputBlock(BaseModel):
     id: str
     type: str
     question: Optional[str] = None
-    options: Optional[List[str]] = None
+    options: Optional[List[Dict[str, Any]]] = None
+
+class RootCause(BaseModel):
+    category: str
+    severity: str
+    explanation: str
+    underlying_concept: str = ""
+    will_drill: bool = False
 
 class FeedbackModel(BaseModel):
-    is_correct: bool
-    explanation: str
+    overall: str # 'correct' | 'partial' | 'incorrect'
+    message: str
+    score: float = 0.0
+    root_cause: Optional[RootCause] = None
 
 class Artifact(BaseModel):
     artifact_id: str

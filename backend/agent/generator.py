@@ -1,7 +1,7 @@
 import uuid
 from models.artifact import Artifact, ContentBlock, InputBlock
 from models.gemini_schemas import GeminiGeneratedArtifact
-from services.gemini_client import gemini_client
+from services.llm_service import llm_service
 from config.prompts import SYSTEM_PROMPT_GENERATOR
 from models.session import Session
 
@@ -30,33 +30,69 @@ class ArtifactGenerator:
         
         prompt = (
             f"Generate a {skill} exercise for a {level} level student learning {session.target_language}. "
-            f"The topic is '{topic}'."
+            f"The topic is '{topic}'.\n"
+            f"CRITICAL: Any 'audio' content blocks MUST be extremely short (maximum 2 or 3 brief sentences). "
+            f"Long text will be cut off by the TTS engine, so keep it very brief!"
         )
 
         # Call Gemini using Structured Outputs
-        gemini_artifact: GeminiGeneratedArtifact = await gemini_client.generate_structured(
-            prompt=prompt,
-            response_schema=GeminiGeneratedArtifact,
-            system_instruction=system_instruction
-        )
+        print(f"DEBUG: Calling Gemini API for generation (Skill: {skill}, Topic: {topic})")
+        try:
+            gemini_artifact: GeminiGeneratedArtifact = await llm_service.generate_structured(
+                prompt=prompt,
+                response_schema=GeminiGeneratedArtifact,
+                system_instruction=system_instruction
+            )
+            print("DEBUG: Gemini API returned successfully.")
+        except Exception as e:
+            print(f"DEBUG ERROR in generator: {e}")
+            raise
         
-        # Convert Gemini models to our core Artifact models
-        content_blocks = [
-            ContentBlock(
-                id=c.id,
-                type=c.type,
-                text=c.text
-            ) for c in gemini_artifact.content
-        ]
+        content_blocks = []
+        for c in gemini_artifact.content:
+            block_url = None
+            if c.type == "audio" and c.text:
+                try:
+                    print(f"DEBUG: Generating TTS for audio block {c.id}...")
+                    import os
+                    audio_bytes = await llm_service.text_to_speech(c.text, session.target_language)
+                    audio_filename = f"{session.session_id}_turn_{session.current_turn}_{c.id}.wav"
+                    file_path = os.path.join(os.path.dirname(__file__), "..", "storage", "audio", audio_filename)
+                    with open(file_path, "wb") as f:
+                        f.write(audio_bytes)
+                    block_url = f"http://localhost:8001/storage/audio/{audio_filename}"
+                    print(f"DEBUG: TTS generated and saved to {file_path}")
+                except Exception as e:
+                    print(f"DEBUG ERROR generating TTS: {e}")
+                    import traceback
+                    traceback.print_exc()
+                    print(f"DEBUG TTS Request Details: text={c.text[:50]}..., language={session.target_language}")
+                    
+            content_blocks.append(
+                ContentBlock(
+                    id=c.id,
+                    type=c.type,
+                    text=c.text,
+                    url=block_url
+                )
+            )
         
-        input_blocks = [
-            InputBlock(
-                id=i.id,
-                type=i.type,
-                question=i.question,
-                options=i.options
-            ) for i in gemini_artifact.inputs
-        ]
+        input_blocks = []
+        for i in gemini_artifact.inputs:
+            formatted_options = None
+            if i.options:
+                formatted_options = [
+                    {"id": f"opt_{idx}", "text": opt} 
+                    for idx, opt in enumerate(i.options)
+                ]
+            input_blocks.append(
+                InputBlock(
+                    id=i.id,
+                    type=i.type,
+                    question=i.question,
+                    options=formatted_options
+                )
+            )
         
         # Save correct answers in metadata (so the frontend doesn't see them, 
         # but we can use them in the Evaluator)
