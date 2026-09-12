@@ -65,3 +65,24 @@ In [`lib/services/websocket_service.dart`](file:///c:/Users/dariorf/Documents/ha
 sessionService.connect(url: 'ws://localhost:8000/ws/session');
 ```
 If the backend is not running yet, the frontend automatically falls back to the built-in generative simulation so you can test all UI components offline without server errors.
+
+---
+
+## 5. Storage Directory Structure (Audio & Media)
+
+The root [`storage/`](file:///c:/Users/dariorf/Documents/hackaton/mad-language-hack/storage/) folder stores media files outside of git:
+
+```
+mad-language-hack/
+├── storage/               (Ignored in .gitignore — local media only)
+│   ├── audio/             (Backend-generated MP3 files for listening exercises)
+│   │   └── announcement_gardermoen.mp3
+│   └── recordings/        (User speech recordings sent from frontend for STT analysis)
+│       └── recording_turn_3.webm (or .mp3)
+```
+
+### Audio Submission Format:
+When the user finishes an `audio_recorder` exercise (Turn 3), the frontend sends in `06_user_response_envelope.json`:
+- `audio_url`: `"storage/recordings/recording_turn_3.webm"`
+- `value`: Base64 encoded audio string (or file reference) for direct Gemini audio evaluation
+- Users can also click **"Save to disk"** in the UI to save their recording directly to disk.

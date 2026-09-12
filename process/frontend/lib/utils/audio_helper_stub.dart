@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 
 class AudioHelper {
@@ -36,5 +37,14 @@ class AudioHelper {
     if (onComplete != null) {
       Future.delayed(const Duration(milliseconds: 500), onComplete);
     }
+  }
+
+  static void downloadRecording([String filename = 'recording.webm']) {
+    debugPrint('[Stub AudioHelper] downloadRecording: $filename');
+  }
+
+  static Future<String?> getRecordedBase64() async {
+    debugPrint('[Stub AudioHelper] getRecordedBase64');
+    return 'bW9jay1hdWRpby1kYXRh';
   }
 }

@@ -93,19 +93,22 @@ class _AudioRecorderWidgetState extends State<AudioRecorderWidget>
     _pulseController.reset();
 
     final blobUrl = await AudioHelper.stopRecording();
+    final base64Audio = await AudioHelper.getRecordedBase64();
+
+    if (!mounted) return;
 
     setState(() {
       _isRecording = false;
       _hasRecorded = true;
     });
 
-    final audioUrl = blobUrl ??
-        'http://localhost:8000/media/${widget.collector.sessionId}/recording_turn_${widget.collector.turnNumber}.webm';
+    final filename = 'recording_turn_${widget.collector.turnNumber}.webm';
+    final audioUrl = blobUrl ?? 'storage/recordings/$filename';
 
     widget.collector.setResponse(
       widget.block.id,
       'audio_recorder',
-      audioUrl,
+      base64Audio ?? audioUrl,
       audioUrl: audioUrl,
       durationSeconds: _secondsRecorded.toDouble(),
     );
@@ -230,30 +233,53 @@ class _AudioRecorderWidgetState extends State<AudioRecorderWidget>
             ),
           ),
 
-          if (_hasRecorded && widget.block.allowReplay) ...[
+          if (_hasRecorded) ...[
             const SizedBox(height: AppTheme.spacingMD),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: AppTheme.spacingSM,
+              runSpacing: AppTheme.spacingSM,
               children: [
+                if (widget.block.allowReplay)
+                  OutlinedButton.icon(
+                    onPressed: _togglePlayback,
+                    icon: Icon(
+                      _isPlayingBack ? Icons.stop_rounded : Icons.play_arrow_rounded,
+                      size: 18,
+                      color: AppTheme.primary,
+                    ),
+                    label: Text(
+                      _isPlayingBack ? 'Stop' : 'Play back',
+                      style: const TextStyle(color: AppTheme.primary),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: AppTheme.border),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppTheme.radiusMD),
+                      ),
+                    ),
+                  ),
                 OutlinedButton.icon(
-                  onPressed: _togglePlayback,
-                  icon: Icon(
-                    _isPlayingBack ? Icons.stop_rounded : Icons.play_arrow_rounded,
-                    size: 18,
-                    color: AppTheme.primary,
-                  ),
-                  label: Text(
-                    _isPlayingBack ? 'Stop' : 'Play back',
-                    style: const TextStyle(color: AppTheme.primary),
-                  ),
+                  onPressed: () {
+                    final filename = 'recording_turn_${widget.collector.turnNumber}.webm';
+                    AudioHelper.downloadRecording(filename);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Downloading $filename to storage/recordings...'),
+                        backgroundColor: AppTheme.surfaceElevated,
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.download_rounded, size: 18, color: AppTheme.accent),
+                  label: const Text('Save to disk', style: TextStyle(color: AppTheme.accent)),
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppTheme.border),
+                    side: const BorderSide(color: AppTheme.accent),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(AppTheme.radiusMD),
                     ),
                   ),
                 ),
-                const SizedBox(width: AppTheme.spacingSM),
                 TextButton.icon(
                   onPressed: _startRecording,
                   icon: const Icon(Icons.refresh_rounded, size: 16, color: AppTheme.secondary),
