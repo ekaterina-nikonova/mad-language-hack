@@ -108,7 +108,7 @@ After evaluation, the agent doesn't just give feedback — it performs **root ca
 | TTS | Gemini API (text-to-speech) | Audio generation for listening exercises |
 | STT | Gemini API (speech-to-text) | Transcribe user recordings for evaluation |
 | WebSocket | FastAPI WebSocket | Native support, bidirectional, binary frames |
-| State | In-memory (dict) | Hackathon-scope, no DB needed |
+| State | Local JSON files | Hackathon-scope, no DB needed, simple file read/write |
 | Media Storage | Local filesystem (`./media/`) | All audio, images, video stored locally |
 | Schema Validation | Pydantic v2 | Type-safe models, JSON serialization |
 
@@ -1002,7 +1002,7 @@ class LevelTracker:
 - [ ] Implement Planner (exercise selection logic)
 - [ ] Implement LevelTracker (adaptive leveling)
 - [ ] Wire up the full LoopEngine turn cycle
-- [ ] Implement SessionManager (in-memory state)
+- [ ] Implement SessionManager (local JSON file state)
 - [ ] Complete WebSocket endpoint with full loop
 
 ### Phase 5: Integration + Media (Day 2 afternoon)
