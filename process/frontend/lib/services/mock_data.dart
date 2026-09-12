@@ -108,8 +108,8 @@ class MockDataService {
         {
           "type": "audio",
           "id": "listen_audio_track",
-          "url": "http://localhost:8000/media/announcement_gardermoen.mp3",
-          "duration_seconds": 14,
+          "url": "assets/announcement_gardermoen.mp3",
+          "duration_seconds": 7,
           "playback_speed_options": [0.75, 1.0, 1.25],
           "max_plays": 3,
           "transcript_hidden": true,

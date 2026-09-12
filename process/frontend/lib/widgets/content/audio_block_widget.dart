@@ -4,6 +4,8 @@ import '../../config/theme.dart';
 import '../../models/content_block.dart';
 import '../../utils/response_collector.dart';
 
+import '../../utils/audio_helper.dart';
+
 class AudioBlockWidget extends StatefulWidget {
   final AudioContentBlock block;
   final ResponseCollector? collector;
@@ -52,6 +54,7 @@ class _AudioBlockWidgetState extends State<AudioBlockWidget>
   void dispose() {
     _playbackTimer?.cancel();
     _waveController.dispose();
+    AudioHelper.stopAudio();
     super.dispose();
   }
 
@@ -80,11 +83,30 @@ class _AudioBlockWidgetState extends State<AudioBlockWidget>
     });
     widget.collector?.incrementAudioPlays();
 
+    // Play audio strictly from the contract URL using HTML5 Audio
+    AudioHelper.playAudio(
+      url: widget.block.url,
+      speed: _currentSpeed,
+      onComplete: () {
+        if (mounted) _stopPlayback();
+      },
+      onError: () {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Could not load audio from URL: ${widget.block.url}'),
+              backgroundColor: AppTheme.surfaceElevated,
+            ),
+          );
+        }
+      },
+    );
+
     const stepDurationMs = 100;
     final totalSteps = (widget.block.durationSeconds * 1000 / _currentSpeed) / stepDurationMs;
 
     _playbackTimer?.cancel();
-    _playbackTimer = Timer.periodic(Duration(milliseconds: stepDurationMs), (timer) {
+    _playbackTimer = Timer.periodic(const Duration(milliseconds: stepDurationMs), (timer) {
       if (!mounted) return;
       setState(() {
         _progress += 1.0 / totalSteps;
@@ -98,9 +120,12 @@ class _AudioBlockWidgetState extends State<AudioBlockWidget>
 
   void _stopPlayback() {
     _playbackTimer?.cancel();
-    setState(() {
-      _isPlaying = false;
-    });
+    AudioHelper.stopAudio();
+    if (mounted) {
+      setState(() {
+        _isPlaying = false;
+      });
+    }
   }
 
   @override
@@ -219,6 +244,7 @@ class _AudioBlockWidgetState extends State<AudioBlockWidget>
                         setState(() {
                           _currentSpeed = speed;
                         });
+                        AudioHelper.setSpeed(speed);
                       },
                       borderRadius: BorderRadius.circular(AppTheme.radiusSM),
                       child: Container(

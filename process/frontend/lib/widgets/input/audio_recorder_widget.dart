@@ -4,6 +4,8 @@ import '../../config/theme.dart';
 import '../../models/input_block.dart';
 import '../../utils/response_collector.dart';
 
+import '../../utils/audio_helper.dart';
+
 class AudioRecorderWidget extends StatefulWidget {
   final AudioRecorderInputBlock block;
   final ResponseCollector collector;
@@ -50,6 +52,7 @@ class _AudioRecorderWidgetState extends State<AudioRecorderWidget>
   void dispose() {
     _timer?.cancel();
     _pulseController.dispose();
+    AudioHelper.stopAudio();
     super.dispose();
   }
 
@@ -61,7 +64,7 @@ class _AudioRecorderWidgetState extends State<AudioRecorderWidget>
     }
   }
 
-  void _startRecording() {
+  void _startRecording() async {
     setState(() {
       _isRecording = true;
       _secondsRecorded = 0;
@@ -69,6 +72,8 @@ class _AudioRecorderWidgetState extends State<AudioRecorderWidget>
       _isPlayingBack = false;
     });
     _pulseController.repeat(reverse: true);
+
+    await AudioHelper.startRecording();
 
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -82,17 +87,19 @@ class _AudioRecorderWidgetState extends State<AudioRecorderWidget>
     });
   }
 
-  void _stopRecording() {
+  void _stopRecording() async {
     _timer?.cancel();
     _pulseController.stop();
     _pulseController.reset();
+
+    final blobUrl = await AudioHelper.stopRecording();
 
     setState(() {
       _isRecording = false;
       _hasRecorded = true;
     });
 
-    final audioUrl =
+    final audioUrl = blobUrl ??
         'http://localhost:8000/media/${widget.collector.sessionId}/recording_turn_${widget.collector.turnNumber}.webm';
 
     widget.collector.setResponse(
@@ -108,10 +115,11 @@ class _AudioRecorderWidgetState extends State<AudioRecorderWidget>
     if (!_hasRecorded) return;
 
     if (_isPlayingBack) {
+      AudioHelper.stopAudio();
       setState(() => _isPlayingBack = false);
     } else {
       setState(() => _isPlayingBack = true);
-      Future.delayed(Duration(seconds: _secondsRecorded > 0 ? _secondsRecorded : 3), () {
+      AudioHelper.playRecordedAudio(onComplete: () {
         if (mounted) {
           setState(() => _isPlayingBack = false);
         }

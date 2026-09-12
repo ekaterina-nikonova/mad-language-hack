@@ -13,7 +13,7 @@ import 'package:mad_language_frontend/widgets/feedback/root_cause_card.dart';
 void main() {
   group('1. Model & Schema Validation', () {
     test('All MockDataService artifacts parse properly', () {
-      expect(MockDataService.mockArtifactSequence.length, equals(7));
+      expect(MockDataService.mockArtifactSequence.length, equals(6));
       for (final artifact in MockDataService.mockArtifactSequence) {
         expect(artifact.artifactId, isNotEmpty);
         expect(artifact.sessionId, isNotEmpty);
@@ -165,16 +165,14 @@ void main() {
       );
 
       // Verify content rendered
-      expect(find.text('På Kafeen i Oslo'), findsOneWidget);
-      expect(find.text('Hva bestiller Sofie på kafeen?'), findsOneWidget);
+      expect(find.text('Åpen skriveoppgave: Morgenrutine'), findsOneWidget);
+      expect(find.byType(TextField), findsOneWidget);
 
-      // Select option
-      await tester.tap(find.text('Kaffe og kanelbolle'));
-      await tester.pumpAndSettle();
-
-      // Tap true
-      await tester.scrollUntilVisible(find.text('Riktig (True)'), 100);
-      await tester.tap(find.text('Riktig (True)'));
+      // Enter free text response (minimum 25 chars required)
+      await tester.enterText(
+        find.byType(TextField),
+        'Hver morgen våkner jeg tidlig. Først drikker jeg kaffe og spiser god frokost.',
+      );
       await tester.pumpAndSettle();
 
       expect(collector.isComplete, isTrue);
