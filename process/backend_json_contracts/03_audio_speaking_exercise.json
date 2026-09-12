@@ -1,0 +1,42 @@
+{
+  "artifact_id": "art-speaking-03",
+  "turn_number": 3,
+  "session_id": "sess-mad-hackathon-2026",
+  "skill": "speaking",
+  "level": "A2",
+  "target_language": "no",
+  "base_language": "en",
+  "topic": "Muntlig Øvelse: Bestille på Restaurant",
+  "grammar_focus": "pronunciation_intonation",
+  "mode": "exercise",
+  "agent_message": "Nå skal vi øve på uttale og setningsmelodi! Les setningen høyt inn i mikrofonen. Når du er ferdig kan du høre opptaket ditt før du sender.",
+  "metadata": {
+    "progress": { "current": 3, "total": 4 }
+  },
+  "content": [
+    {
+      "type": "text",
+      "id": "spk_heading",
+      "text": "Muntlig taleoppgave",
+      "style": "heading",
+      "language": "no"
+    },
+    {
+      "type": "text",
+      "id": "spk_inst",
+      "text": "Trykk på den runde mikrofonknappen nedenfor for å starte innspillingen:",
+      "style": "instruction",
+      "language": "no"
+    }
+  ],
+  "inputs": [
+    {
+      "type": "audio_recorder",
+      "id": "q_speech_record",
+      "prompt": "Les denne høflige bestillingen høyt og tydelig:",
+      "reference_text": "Unnskyld, kan jeg få se menyen og bestille et glass vann?",
+      "max_duration_seconds": 25,
+      "allow_replay": true
+    }
+  ]
+}

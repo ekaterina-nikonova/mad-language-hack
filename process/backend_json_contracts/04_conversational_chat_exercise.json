@@ -1,0 +1,65 @@
+{
+  "artifact_id": "art-chat-04",
+  "turn_number": 4,
+  "session_id": "sess-mad-hackathon-2026",
+  "skill": "speaking_and_writing",
+  "level": "B1",
+  "target_language": "no",
+  "base_language": "en",
+  "topic": "Samtale: Innsjekking på Hotell",
+  "grammar_focus": "polite_requests",
+  "mode": "exercise",
+  "agent_message": "Rollespill: Du ankommer hotellet i Tromsø klokken 22:00. Resepsjonisten henvender seg til deg. Svar høflig på spørsmålet i tekstfeltet.",
+  "metadata": {
+    "progress": { "current": 4, "total": 4 }
+  },
+  "content": [
+    {
+      "type": "text",
+      "id": "chat_heading",
+      "text": "Rollespill: Resepsjonen",
+      "style": "heading",
+      "language": "no"
+    },
+    {
+      "type": "dialogue",
+      "id": "chat_dialogue_flow",
+      "speakers": [
+        { "id": "A", "name": "Resepsjonist (Kari)" },
+        { "id": "B", "name": "Deg (Dario)" }
+      ],
+      "lines": [
+        {
+          "speaker": "A",
+          "text": "God kveld og velkommen til Tromsø! Har du en reservasjon hos oss i kveld?",
+          "isBlank": false
+        },
+        {
+          "speaker": "B",
+          "text": "Ja, jeg har bestilt et rom...",
+          "isBlank": true
+        }
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "type": "free_text",
+      "id": "q_hotel_reply",
+      "placeholder": "Skriv svaret ditt til resepsjonisten...",
+      "min_length": 15,
+      "max_length": 300,
+      "lines": 3
+    },
+    {
+      "type": "dropdown",
+      "id": "q_breakfast_pref",
+      "label": "Velg frokostønske:",
+      "options": [
+        { "id": "opt_early", "text": "Tidlig frokost (kl. 06:30)" },
+        { "id": "opt_regular", "text": "Vanlig frokost (kl. 08:00)" },
+        { "id": "opt_takeaway", "text": "Frokostpose for fjelltur (Takeaway)" }
+      ]
+    }
+  ]
+}

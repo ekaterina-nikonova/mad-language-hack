@@ -1,0 +1,59 @@
+{
+  "artifact_id": "art-feedback-05",
+  "turn_number": 5,
+  "session_id": "sess-mad-hackathon-2026",
+  "skill": "writing",
+  "level": "A2",
+  "target_language": "no",
+  "base_language": "en",
+  "topic": "Preteritum og Uregelmessige Verb",
+  "grammar_focus": "past_tense_irregular",
+  "mode": "feedback",
+  "agent_message": "Flott innsats! Du gjorde en feil med verbbøyingen, men her er den nøyaktige årsaken (Root Cause Diagnosis) og forklaringen:",
+  "metadata": {
+    "progress": { "current": 3, "total": 5 },
+    "is_drill_next": true
+  },
+  "feedback": {
+    "overall": "partial",
+    "score": 0.70,
+    "message": "Nesten helt riktig! God setningsstruktur, men verbet krever oppmerksomhet.",
+    "corrections": [
+      {
+        "input_id": "q2_blank",
+        "blank_id": "blank_verb_gaa",
+        "user_answer": "gådde",
+        "correct_answer": "gikk",
+        "explanation": "«Å gå» er et sterkt uregelmessig verb. Preteritumsformen er «gikk», ikke «gådde»."
+      }
+    ],
+    "root_cause": {
+      "category": "grammar_rule",
+      "severity": "deep",
+      "explanation": "Du overgeneraliserte den svake regelmessige endelsen (-de) på et sterkt verb med rotvokalskifte (Ablaut).",
+      "underlying_concept": "Sterke verb med vokalskifte i preteritum (å gå -> gikk)",
+      "will_drill": true
+    },
+    "encouragement": "Dette er veldig vanlig! La oss ta en rask drill for å automatisere formen.",
+    "level_assessment": {
+      "current": "A2",
+      "trend": "improving",
+      "ready_for_next": false
+    }
+  },
+  "content": [
+    {
+      "type": "conjugation_table",
+      "id": "drill_table",
+      "verb": "å gå",
+      "tense": "preteritum",
+      "rows": [
+        { "pronoun": "Infinitiv", "form": "å gå", "revealed": true },
+        { "pronoun": "Presens", "form": "går", "revealed": true },
+        { "pronoun": "Preteritum", "form": "gikk", "revealed": true },
+        { "pronoun": "Perfektum", "form": "har gått", "revealed": true }
+      ]
+    }
+  ],
+  "inputs": []
+}

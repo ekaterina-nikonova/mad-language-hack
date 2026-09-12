@@ -1,0 +1,61 @@
+{
+  "artifact_id": "art-listening-02",
+  "turn_number": 2,
+  "session_id": "sess-mad-hackathon-2026",
+  "skill": "listening",
+  "level": "B1",
+  "target_language": "no",
+  "base_language": "en",
+  "topic": "På Flyplassen i Oslo",
+  "grammar_focus": "listening_comprehension",
+  "mode": "exercise",
+  "agent_message": "Lytt nøye til høyttalermeldingen fra Oslo lufthavn Gardermoen. Legg merke til hvilken gate flyet til Bergen har flyttet til, og svar på spørsmålene.",
+  "metadata": {
+    "progress": { "current": 2, "total": 4 }
+  },
+  "content": [
+    {
+      "type": "text",
+      "id": "listen_heading",
+      "text": "Lytteøvelse: Melding over høyttaleren",
+      "style": "heading",
+      "language": "no"
+    },
+    {
+      "type": "text",
+      "id": "listen_inst",
+      "text": "Trykk på play for å høre opptaket. Du kan justere farten (0.75x, 1.0x, 1.25x) eller åpne transkripsjonen:",
+      "style": "instruction",
+      "language": "no"
+    },
+    {
+      "type": "audio",
+      "id": "listen_audio_track",
+      "url": "http://localhost:8000/media/announcement_gardermoen.mp3",
+      "duration_seconds": 14,
+      "playback_speed_options": [0.75, 1.0, 1.25],
+      "max_plays": 3,
+      "transcript_hidden": true,
+      "transcript": "Oppmerksomhet, passasjerer til Bergen med rute SK284. På grunn av teknisk vedlikehold er avgangen flyttet fra gate B12 til gate A19. Ombordstigning starter om ti minutter."
+    }
+  ],
+  "inputs": [
+    {
+      "type": "multiple_choice",
+      "id": "q_listen_gate",
+      "question": "Hvilken gate skal passasjerene gå til nå?",
+      "options": [
+        { "id": "a", "text": "Gate B12", "label": "A" },
+        { "id": "b", "text": "Gate A19", "label": "B" },
+        { "id": "c", "text": "Gate C4", "label": "C" },
+        { "id": "d", "text": "Gate D8", "label": "D" }
+      ]
+    },
+    {
+      "type": "boolean",
+      "id": "q_listen_boarding",
+      "statement": "Ombordstigningen starter med en gang (akkurat nå).",
+      "labels": ["Riktig (True)", "Galt (False - om 10 min)"]
+    }
+  ]
+}

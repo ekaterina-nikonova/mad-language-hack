@@ -1,0 +1,23 @@
+{
+  "session_id": "sess-mad-hackathon-2026",
+  "artifact_id": "art-free-form-01",
+  "turn_number": 1,
+  "timestamp": "2026-09-12T13:15:00.000Z",
+  "responses": [
+    {
+      "input_id": "q_freeform_answer",
+      "type": "free_text",
+      "value": "Hver morgen våkner jeg klokken sju. Først drikker jeg en kopp kaffe, deretter spiser jeg frokost med ferskt brød."
+    },
+    {
+      "input_id": "q_confidence_slider",
+      "type": "slider",
+      "value": 4.0
+    }
+  ],
+  "client_metadata": {
+    "time_taken_seconds": 38,
+    "hint_used": false,
+    "audio_plays": 0
+  }
+}

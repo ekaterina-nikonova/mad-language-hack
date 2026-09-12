@@ -1,0 +1,64 @@
+{
+  "artifact_id": "art-free-form-01",
+  "turn_number": 1,
+  "session_id": "sess-mad-hackathon-2026",
+  "skill": "writing",
+  "level": "B1",
+  "target_language": "no",
+  "base_language": "en",
+  "topic": "Min Daglige Rutine",
+  "grammar_focus": "sentence_structure",
+  "mode": "exercise",
+  "agent_message": "Hei Dario! I dag skal vi trene på skriftlig formuleringsevne. Beskriv hva du pleier å gjøre om morgenen. Prøv å bruke minst to tidsuttrykk som «først», «deretter» eller «etterpå».",
+  "metadata": {
+    "progress": { "current": 1, "total": 4 },
+    "hint_available": true
+  },
+  "content": [
+    {
+      "type": "text",
+      "id": "ff_heading",
+      "text": "Åpen skriveoppgave: Morgenrutine",
+      "style": "heading",
+      "language": "no"
+    },
+    {
+      "type": "text",
+      "id": "ff_instruction",
+      "text": "Skriv en sammenhengende tekst (minimum 25 tegn). Bruk gjerne ordene fra listen nedenfor:",
+      "style": "instruction",
+      "language": "no"
+    },
+    {
+      "type": "vocabulary_grid",
+      "id": "ff_vocab",
+      "words": [
+        { "word": "å våkne", "translation": "to wake up", "phonetic": "/voːknə/" },
+        { "word": "frokost", "translation": "breakfast", "phonetic": "/fruːkust/" },
+        { "word": "å pusse tenner", "translation": "to brush teeth", "phonetic": "/pusə tenːər/" },
+        { "word": "deretter", "translation": "afterwards", "phonetic": "/dɛrɛtːər/" }
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "type": "free_text",
+      "id": "q_freeform_answer",
+      "placeholder": "Skriv svaret ditt her på norsk...",
+      "min_length": 25,
+      "max_length": 600,
+      "lines": 5,
+      "language": "no"
+    },
+    {
+      "type": "slider",
+      "id": "q_confidence_slider",
+      "label": "Hvor fornøyd er du med teksten din?",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "labels": ["Må øve mer", "Litt usikker", "Helt greit", "Bra", "Superfornøyd!"],
+      "default_value": 4
+    }
+  ]
+}
