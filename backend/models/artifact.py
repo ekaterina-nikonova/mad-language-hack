@@ -26,6 +26,8 @@ class Artifact(BaseModel):
     target_language: str
     base_language: str
     topic: str
+    grammar_focus: Optional[str] = None
+    agent_message: Optional[str] = None
     mode: str = "exercise"
     content: List[ContentBlock] = Field(default_factory=list)
     inputs: List[InputBlock] = Field(default_factory=list)
