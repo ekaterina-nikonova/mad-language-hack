@@ -15,3 +15,22 @@ __pycache__/
 # IDEs
 .vscode/
 .idea/
+
+# Storage folder for user recordings and backend-generated audio (untracked in git)
+storage/
+storage/*
+!storage/.gitkeep
+!storage/recordings/.gitkeep
+!storage/audio/.gitkeep
+
+# Flutter & Dart builds
+process/frontend/build/
+process/frontend/.dart_tool/
+.dart_tool/
+.packages
+
+# IDE & OS temporary files
+.idea/
+.vscode/
+*.swp
+Thumbs.db

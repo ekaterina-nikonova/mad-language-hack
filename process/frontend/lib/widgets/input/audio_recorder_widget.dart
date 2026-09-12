@@ -4,6 +4,8 @@ import '../../config/theme.dart';
 import '../../models/input_block.dart';
 import '../../utils/response_collector.dart';
 
+import '../../utils/audio_helper.dart';
+
 class AudioRecorderWidget extends StatefulWidget {
   final AudioRecorderInputBlock block;
   final ResponseCollector collector;
@@ -50,6 +52,7 @@ class _AudioRecorderWidgetState extends State<AudioRecorderWidget>
   void dispose() {
     _timer?.cancel();
     _pulseController.dispose();
+    AudioHelper.stopAudio();
     super.dispose();
   }
 
@@ -61,7 +64,7 @@ class _AudioRecorderWidgetState extends State<AudioRecorderWidget>
     }
   }
 
-  void _startRecording() {
+  void _startRecording() async {
     setState(() {
       _isRecording = true;
       _secondsRecorded = 0;
@@ -69,6 +72,8 @@ class _AudioRecorderWidgetState extends State<AudioRecorderWidget>
       _isPlayingBack = false;
     });
     _pulseController.repeat(reverse: true);
+
+    await AudioHelper.startRecording();
 
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -82,23 +87,28 @@ class _AudioRecorderWidgetState extends State<AudioRecorderWidget>
     });
   }
 
-  void _stopRecording() {
+  void _stopRecording() async {
     _timer?.cancel();
     _pulseController.stop();
     _pulseController.reset();
+
+    final blobUrl = await AudioHelper.stopRecording();
+    final base64Audio = await AudioHelper.getRecordedBase64();
+
+    if (!mounted) return;
 
     setState(() {
       _isRecording = false;
       _hasRecorded = true;
     });
 
-    final audioUrl =
-        'http://localhost:8000/media/${widget.collector.sessionId}/recording_turn_${widget.collector.turnNumber}.webm';
+    final filename = 'recording_turn_${widget.collector.turnNumber}.webm';
+    final audioUrl = blobUrl ?? 'storage/recordings/$filename';
 
     widget.collector.setResponse(
       widget.block.id,
       'audio_recorder',
-      audioUrl,
+      base64Audio ?? audioUrl,
       audioUrl: audioUrl,
       durationSeconds: _secondsRecorded.toDouble(),
     );
@@ -108,10 +118,11 @@ class _AudioRecorderWidgetState extends State<AudioRecorderWidget>
     if (!_hasRecorded) return;
 
     if (_isPlayingBack) {
+      AudioHelper.stopAudio();
       setState(() => _isPlayingBack = false);
     } else {
       setState(() => _isPlayingBack = true);
-      Future.delayed(Duration(seconds: _secondsRecorded > 0 ? _secondsRecorded : 3), () {
+      AudioHelper.playRecordedAudio(onComplete: () {
         if (mounted) {
           setState(() => _isPlayingBack = false);
         }
@@ -222,30 +233,53 @@ class _AudioRecorderWidgetState extends State<AudioRecorderWidget>
             ),
           ),
 
-          if (_hasRecorded && widget.block.allowReplay) ...[
+          if (_hasRecorded) ...[
             const SizedBox(height: AppTheme.spacingMD),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: AppTheme.spacingSM,
+              runSpacing: AppTheme.spacingSM,
               children: [
+                if (widget.block.allowReplay)
+                  OutlinedButton.icon(
+                    onPressed: _togglePlayback,
+                    icon: Icon(
+                      _isPlayingBack ? Icons.stop_rounded : Icons.play_arrow_rounded,
+                      size: 18,
+                      color: AppTheme.primary,
+                    ),
+                    label: Text(
+                      _isPlayingBack ? 'Stop' : 'Play back',
+                      style: const TextStyle(color: AppTheme.primary),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: AppTheme.border),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppTheme.radiusMD),
+                      ),
+                    ),
+                  ),
                 OutlinedButton.icon(
-                  onPressed: _togglePlayback,
-                  icon: Icon(
-                    _isPlayingBack ? Icons.stop_rounded : Icons.play_arrow_rounded,
-                    size: 18,
-                    color: AppTheme.primary,
-                  ),
-                  label: Text(
-                    _isPlayingBack ? 'Stop' : 'Play back',
-                    style: const TextStyle(color: AppTheme.primary),
-                  ),
+                  onPressed: () {
+                    final filename = 'recording_turn_${widget.collector.turnNumber}.webm';
+                    AudioHelper.downloadRecording(filename);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Downloading $filename to storage/recordings...'),
+                        backgroundColor: AppTheme.surfaceElevated,
+                        duration: const Duration(seconds: 2),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.download_rounded, size: 18, color: AppTheme.accent),
+                  label: const Text('Save to disk', style: TextStyle(color: AppTheme.accent)),
                   style: OutlinedButton.styleFrom(
-                    side: const BorderSide(color: AppTheme.border),
+                    side: const BorderSide(color: AppTheme.accent),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(AppTheme.radiusMD),
                     ),
                   ),
                 ),
-                const SizedBox(width: AppTheme.spacingSM),
                 TextButton.icon(
                   onPressed: _startRecording,
                   icon: const Icon(Icons.refresh_rounded, size: 16, color: AppTheme.secondary),
